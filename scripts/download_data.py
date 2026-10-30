@@ -6,10 +6,15 @@
 
 این اسکریپت فقط به اینترنت نیاز دارد و هرگز محتوای ساختگی تولید نمی‌کند.
 """
+import io
 import sys
+import zipfile
 from pathlib import Path
 
 import requests
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 RAW = BASE_DIR / "data" / "raw"
@@ -40,15 +45,23 @@ def fetch_tanzil():
 
 def fetch_corpus():
     s = requests.Session()
-    # گام ۱: صفحه دانلود با ایمیل تحقیق
+    # گام ۱: ثبت ایمیل تحقیق در فرم رسمی
     r1 = s.post(CORPUS_URL, data={"txtEmail": CORPUS_EMAIL}, timeout=60)
     r1.raise_for_status()
-    # گام ۲: درخواست فایل morphology 0.4 (downloadID=3)
+    # گام ۲: دریافت فایل ZIP تحلیل صرفی (downloadID=3)
     r2 = s.post(CORPUS_URL, data={"txtEmail": CORPUS_EMAIL, "downloadID": "3", "validEmail": "true"}, timeout=120)
     r2.raise_for_status()
-    if b"Kais Dukes" not in r2.content[:3000]:
-        raise RuntimeError("فایل دریافت‌شده سربرگ رسمی Corpus را ندارد؛ دانلود را مرور کنید.")
-    save("quranic-corpus-morphology-0.4.txt", r2.content)
+    content = r2.content
+    if content[:2] != b"PK":
+        raise RuntimeError("پاسخ Corpus یک فایل ZIP نیست؛ فرم/سرویس دانلود تغییر کرده است.")
+    with zipfile.ZipFile(io.BytesIO(content)) as zf:
+        candidates = [n for n in zf.namelist() if n.lower().endswith(".txt")]
+        if not candidates:
+            raise RuntimeError("در بستهٔ Corpus فایل متنی پیدا نشد.")
+        raw = zf.read(candidates[0])
+    if b"Kais Dukes" not in raw[:3000]:
+        raise RuntimeError("فایل استخراج‌شده سربرگ رسمی Corpus را ندارد؛ دانلود را بازبینی کنید.")
+    save("quranic-corpus-morphology-0.4.txt", raw)
 
 
 def fetch_metadata():
