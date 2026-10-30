@@ -7,6 +7,9 @@ API سرور بله سازگار است) تأیید شد. base_url = https://tap
   POST https://tapi.bale.ai/bot{token}/getUpdates       {offset, limit, timeout}
   POST https://tapi.bale.ai/bot{token}/sendMessage     {chat_id, text}
   POST https://tapi.bale.ai/bot{token}/sendDocument    multipart: chat_id + document + caption
+  POST https://tapi.bale.ai/bot{token}/setWebhook      {url}
+  POST https://tapi.bale.ai/bot{token}/deleteWebhook   {}
+  GET  https://tapi.bale.ai/bot{token}/getWebhookInfo
 
 بدون توکن هیچ تماس شبکه انجام نمی‌شود؛ در آن حالت فقط سازنده و منطق داخلی ساخته می‌شود.
 """
@@ -85,6 +88,27 @@ class BaleClient:
         if not payload.get("ok"):
             raise BaleApiError(payload.get("error_code", resp.status_code), payload.get("description", "خطای ناشناخته"))
         return payload["result"]
+
+    # ---------- webhook ----------
+    def set_webhook(self, url: str, max_connections: int = None):
+        """ثبت آدرس دریافت update. بله پورت‌های ۴۴۳ و ۸۸ را مستند کرده است."""
+        if not self.ready:
+            raise RuntimeError("کلاینت بله آماده نیست (توکن تنظیم نشده).")
+        payload = {"url": url}
+        if max_connections is not None:
+            payload["max_connections"] = int(max_connections)
+        return self._call("setWebhook", json=payload)
+
+    def delete_webhook(self):
+        """حذف webhook و بازگشت به حالت polling."""
+        if not self.ready:
+            raise RuntimeError("کلاینت بله آماده نیست (توکن تنظیم نشده).")
+        return self._call("deleteWebhook", json={})
+
+    def get_webhook_info(self):
+        if not self.ready:
+            raise RuntimeError("کلاینت بله آماده نیست (توکن تنظیم نشده).")
+        return self._call("getWebhookInfo", http_method="GET")
 
     # ---------- ابزار ----------
     def get_me(self):

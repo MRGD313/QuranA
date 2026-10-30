@@ -6,6 +6,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Webhook deployment mode (`server.py`) for free, trigger-based hosting on
+  Render: Bale wakes the service on each message instead of 24/7 polling.
+- `setWebhook` / `deleteWebhook` / `getWebhookInfo` in the Bale client.
+- `scripts/set_webhook.py` to register, inspect, or remove the webhook.
+- `render.yaml` Blueprint (free plan, Frankfurt, build-time database creation).
+- Duplicate `update_id` suppression and a friendly "session expired" message.
+- `/healthz` endpoint plus `WEBHOOK_SECRET`, `PUBLIC_BASE_URL`, and `PORT`
+  settings.
+
+### Changed
+
+- `MSG_START` now tells users that the first reply after an idle period may take
+  up to about a minute.
+- `app.py` refuses to start in polling mode while a webhook is registered
+  (`--force` removes it), to avoid disabling a production deployment by accident.
+- SQLite connection can now be used from the webhook server's worker threads.
+
 ## [0.1.0] — 2026-10-30
 
 ### Added

@@ -25,6 +25,30 @@ logging.basicConfig(
 log = logging.getLogger("qurana")
 
 
+def ensure_polling_mode(client, force=False):
+    """بررسی می‌کند polling مجاز است یا webhook جلوی آن را می‌گیرد.
+
+    اگر webhook فعال باشد و force=False، False برمی‌گرداند تا فراخواننده متوقف
+    شود. حذف خودکار webhook انجام نمی‌شود، چون ممکن است به سرویس production
+    اشاره کند.
+    """
+    try:
+        info = client.get_webhook_info() or {}
+    except Exception as exc:
+        log.warning("بررسی وضعیت webhook ناموفق بود: %s", exc)
+        return True
+    url = (info.get("url") or "").strip()
+    if not url:
+        return True
+    if not force:
+        log.error("webhook فعال است و به %s اشاره می‌کند؛ polling کار نمی‌کند.", url)
+        log.error("برای اجرای محلی: python app.py --force   یا   python scripts/set_webhook.py --delete")
+        return False
+    client.delete_webhook()
+    log.info("webhook حذف شد (--force).")
+    return True
+
+
 def main():
     if not BALE_TOKEN:
         print("خطا: توکن ربات تنظیم نشده است. فایل .env را بسازید و BALE_TOKEN را پر کنید.")
@@ -36,6 +60,10 @@ def main():
     client = BaleClient(BALE_TOKEN)
     me = client.get_me()
     log.info("ربات بله متصل شد: %s", me)
+
+    if not ensure_polling_mode(client, force="--force" in sys.argv):
+        repo.close()
+        sys.exit(2)
 
     handler = BotHandler(client, repo)
     log.info("شروع polling. برای خارج شدن Ctrl+C بزنید.")

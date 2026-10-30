@@ -18,7 +18,10 @@ class QuranRepository:
     def connect(self):
         if not self.db_path.exists():
             raise FileNotFoundError(f"پایگاه داده پیدا نشد: {self.db_path} (ابتدا scripts/prepare_data.py را اجرا کنید)")
-        self._conn = sqlite3.connect(str(self.db_path))
+        # check_same_thread=False: در حالت webhook، درخواست‌ها در threadهای
+        # جداگانهٔ سرور HTTP پردازش می‌شوند. دسترسی‌ها با قفل BotHandler
+        # سریال می‌شوند و پایگاه داده فقط خوانده می‌شود.
+        self._conn = sqlite3.connect(str(self.db_path), check_same_thread=False)
         self._conn.row_factory = sqlite3.Row
         self._load_surah_names()
         return self

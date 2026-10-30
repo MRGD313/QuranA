@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: qurana
+    runtime: python
+    plan: free
+    region: frankfurt
+    buildCommand: pip install -r requirements.txt && python scripts/download_data.py && python scripts/prepare_data.py
+    startCommand: python server.py
+    # healthCheckPath عمداً تنظیم نشده است: Render هر چند ثانیه به آن درخواست
+    # HTTP می‌زند و همین می‌تواند سرویس رایگان را همیشه بیدار نگه دارد
+    # (هدر رفتن سهمیهٔ ۷۵۰ ساعت). مسیر /healthz برای بررسی دستی هست.
+    autoDeployTrigger: commit
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.6
+      - key: BALE_TOKEN
+        sync: false
+      - key: WEBHOOK_SECRET
+        generateValue: true

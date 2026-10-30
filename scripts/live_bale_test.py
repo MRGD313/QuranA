@@ -35,6 +35,13 @@ def main():
     me = client.get_me()
     print("getMe:", me.get("username"), "| id:", me.get("id"))
 
+    info = client.get_webhook_info() or {}
+    if (info.get("url") or "").strip():
+        print("⚠ webhook فعال است:", info["url"])
+        print("  تا وقتی webhook ثبت شده باشد، getUpdates کار نمی‌کند.")
+        print("  برای تست polling: python scripts/set_webhook.py --delete")
+        sys.exit(1)
+
     send = "--send" in sys.argv
     updates = client.get_updates(wait_timeout=0)
     print("updates:", len(updates))
