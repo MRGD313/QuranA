@@ -1,5 +1,9 @@
 # QuranA (قرآنا)
 
+[![CI](https://github.com/MRGD313/QuranA/actions/workflows/ci.yml/badge.svg)](https://github.com/MRGD313/QuranA/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![release](https://img.shields.io/badge/release-v0.1.0-orange.svg)](https://github.com/MRGD313/QuranA/releases/tag/v0.1.0)
+
 ربات پیام‌رسان بله برای استخراج **واژه‌های هم‌ریشه** در قرآن کریم.
 یک واژه می‌فرستید؛ QuranA ریشه صرفی آن را پیدا می‌کند، همه واژه‌های قرآنی
 هم‌ریشه را از داده رسمی Quranic Arabic Corpus استخراج می‌کند، متن کامل آیات را
