@@ -1,0 +1,38 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Local environments
+.venv/
+venv/
+env/
+
+# Downloaded third-party datasets (fetch with scripts/download_data.py)
+data/raw/
+
+# Generated databases and reports
+data/*.db
+data/*.sqlite
+data/reports/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
