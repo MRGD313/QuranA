@@ -1,2 +1,4 @@
+# Runtime dependencies for a quick install.
+# Canonical project metadata (name, version, license, dev extras) is in pyproject.toml.
 requests>=2.31
 python-dotenv>=1.0

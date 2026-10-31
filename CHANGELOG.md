@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Documentation restructured: `README.md` is now a concise overview; deployment
+  details moved to `docs/DEPLOYMENT.md`, and the AI-workflow guide was shortened.
+- Added `AGENTS.md`, `opencode.jsonc`, and a `/verify` command for token-efficient
+  agent work.
+- Data/licence facts now have a single source of truth in
+  `THIRD_PARTY_NOTICES.md`.
+
+### Security
+
+- Webhook URLs are redacted in logs and CLI output so the secret path segment is
+  no longer exposed (`redact_secret_url`).
+
 ### Added
 
 - Webhook deployment mode (`server.py`) for free, trigger-based hosting on

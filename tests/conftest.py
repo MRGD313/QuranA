@@ -1,6 +1,5 @@
 """فیکسچرهای مشترک آزمون‌ها."""
 import sys
-import sqlite3
 from pathlib import Path
 
 import pytest
@@ -10,6 +9,16 @@ sys.path.insert(0, str(BASE_DIR))
 
 from config import DB_PATH
 from src.quran_repository import QuranRepository
+
+
+def pytest_sessionstart(session):
+    """اگر پایگاه داده آماده نیست، صریح هشدار بدهد تا skip با pass اشتباه نشود."""
+    if not DB_PATH.exists():
+        print(
+            "\n[tests] data/quran.db missing: data-dependent tests will skip. "
+            "Run scripts/prepare_data.py first.\n",
+            file=sys.stderr,
+        )
 
 
 @pytest.fixture(scope="session")
@@ -45,6 +54,8 @@ class FakeBaleClient:
 
     def texts(self):
         return [t for (_c, t) in self.sent]
+
+
 @pytest.fixture
 def fake_client():
     return FakeBaleClient()
