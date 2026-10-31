@@ -29,3 +29,5 @@ time for a fix before public disclosure.
   (BotFather) and issue a new one. Deleting the commit is not sufficient.
 - `scripts/check_repo_hygiene.py` performs a lightweight scan for token-like
   strings before committing.
+- Webhook URLs embed a secret path segment. QuranA redacts it in logs and CLI
+  output; rotate `WEBHOOK_SECRET` if a full webhook URL is ever exposed.

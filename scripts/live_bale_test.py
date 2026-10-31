@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from config import BALE_TOKEN, DB_PATH
-from src.bale_api import BaleClient, iter_text_messages
+from src.bale_api import BaleClient, redact_secret_url, iter_text_messages
 from src.bot_handler import BotHandler
 from src.quran_repository import QuranRepository
 from src.morphology import resolve_roots
@@ -35,14 +35,17 @@ def main():
     me = client.get_me()
     print("getMe:", me.get("username"), "| id:", me.get("id"))
 
+    send = "--send" in sys.argv
     info = client.get_webhook_info() or {}
     if (info.get("url") or "").strip():
-        print("⚠ webhook فعال است:", info["url"])
+        print("⚠ webhook فعال است:", redact_secret_url(info["url"]))
         print("  تا وقتی webhook ثبت شده باشد، getUpdates کار نمی‌کند.")
         print("  برای تست polling: python scripts/set_webhook.py --delete")
-        sys.exit(1)
+        if send:
+            sys.exit(1)
+        print("اتصال getMe موفق است؛ برای ارسال واقعی ابتدا webhook را حذف کنید.")
+        return
 
-    send = "--send" in sys.argv
     updates = client.get_updates(wait_timeout=0)
     print("updates:", len(updates))
 

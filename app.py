@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from config import BALE_TOKEN, DB_PATH, APP_NAME, APP_VERSION
-from src.bale_api import BaleClient, iter_text_messages
+from src.bale_api import BaleClient, iter_text_messages, redact_secret_url
 from src.bot_handler import BotHandler
 from src.quran_repository import QuranRepository
 
@@ -41,7 +41,8 @@ def ensure_polling_mode(client, force=False):
     if not url:
         return True
     if not force:
-        log.error("webhook فعال است و به %s اشاره می‌کند؛ polling کار نمی‌کند.", url)
+        log.error("webhook فعال است و به %s اشاره می‌کند؛ polling کار نمی‌کند.",
+                  redact_secret_url(url))
         log.error("برای اجرای محلی: python app.py --force   یا   python scripts/set_webhook.py --delete")
         return False
     client.delete_webhook()

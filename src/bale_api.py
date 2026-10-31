@@ -16,10 +16,33 @@ API سرور بله سازگار است) تأیید شد. base_url = https://tap
 import logging
 import time
 from pathlib import Path
+from urllib.parse import urlsplit, urlunsplit
 
 import requests
 
 log = logging.getLogger(__name__)
+
+
+def redact_secret_url(url: str, path_prefix: str = "/hook") -> str:
+    """نسخهٔ امن آدرس webhook برای لاگ/چاپ.
+
+    همهٔ بخش‌های مسیر بعد از ``path_prefix`` (secret) پوشانده می‌شوند، چون secret
+    ممکن است شامل ``/`` باشد.
+
+    نمونه: ``https://host/hook/a/b`` → ``https://host/hook/***``
+    """
+    if not url:
+        return ""
+    parts = urlsplit(url)
+    path = parts.path
+    prefix = "/" + (path_prefix or "hook").strip("/")
+    if path.startswith(prefix + "/"):
+        return urlunsplit((parts.scheme, parts.netloc, prefix + "/***", "", ""))
+    segments = [s for s in path.split("/") if s]
+    if len(segments) < 2:
+        return urlunsplit((parts.scheme, parts.netloc, path, "", ""))
+    segments[-1] = "***"
+    return urlunsplit((parts.scheme, parts.netloc, "/" + "/".join(segments), "", ""))
 
 
 class BaleApiError(Exception):

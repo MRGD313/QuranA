@@ -35,7 +35,7 @@ load_dotenv()
 
 from config import (APP_NAME, APP_VERSION, BALE_TOKEN, DB_PATH, PORT,
                     PUBLIC_BASE_URL, WEBHOOK_PATH_PREFIX, WEBHOOK_SECRET)
-from src.bale_api import BaleClient, iter_text_messages
+from src.bale_api import BaleClient, iter_text_messages, redact_secret_url
 from src.bot_handler import BotHandler
 from src.quran_repository import QuranRepository
 
@@ -156,10 +156,10 @@ def _register_webhook(client, url, retry_delay=30):
         try:
             info = client.get_webhook_info() or {}
             if info.get("url") == url:
-                log.info("webhook از قبل ثبت شده است: %s", url)
+                log.info("webhook از قبل ثبت شده است: %s", redact_secret_url(url))
                 return
             client.set_webhook(url)
-            log.info("webhook ثبت شد: %s", url)
+            log.info("webhook ثبت شد: %s", redact_secret_url(url))
             return
         except Exception as exc:
             log.warning("ثبت webhook ناموفق بود (%s)؛ %s ثانیه دیگر تلاش مجدد",

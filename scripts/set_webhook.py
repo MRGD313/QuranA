@@ -25,7 +25,15 @@ load_dotenv()
 
 from config import (BALE_TOKEN, PUBLIC_BASE_URL, WEBHOOK_PATH_PREFIX,
                     WEBHOOK_SECRET)
-from src.bale_api import BaleClient
+from src.bale_api import BaleClient, redact_secret_url
+
+
+def _print_info(info):
+    """وضعیت webhook را بدون افشای secret چاپ می‌کند."""
+    safe = dict(info or {})
+    if safe.get("url"):
+        safe["url"] = redact_secret_url(safe["url"])
+    print(json.dumps(safe, ensure_ascii=False, indent=2))
 
 
 def main() -> int:
@@ -44,7 +52,7 @@ def main() -> int:
     client = BaleClient(BALE_TOKEN)
 
     if args.info:
-        print(json.dumps(client.get_webhook_info(), ensure_ascii=False, indent=2))
+        _print_info(client.get_webhook_info())
         return 0
 
     if args.delete:
@@ -60,8 +68,8 @@ def main() -> int:
     path = f"{WEBHOOK_PATH_PREFIX}/{args.secret}" if args.secret else WEBHOOK_PATH_PREFIX
     url = f"{base}{path}"
     client.set_webhook(url)
-    print("✅ webhook ثبت شد:", url)
-    print(json.dumps(client.get_webhook_info(), ensure_ascii=False, indent=2))
+    print("✅ webhook ثبت شد:", redact_secret_url(url))
+    _print_info(client.get_webhook_info())
     return 0
 
 

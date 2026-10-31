@@ -7,9 +7,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
 
 from server import WebhookApp
+from src.bale_api import redact_secret_url
 from src.bot_handler import BotHandler, MSG_SESSION_EXPIRED
 
 SECRET = "test-secret"
+
+
+def test_redact_secret_url_masks_last_segment():
+    assert redact_secret_url("https://host/hook/supersecret") == "https://host/hook/***"
+    assert redact_secret_url("https://host/hook/supersecret?x=1") == "https://host/hook/***"
+    assert redact_secret_url("https://host/hook/abc/def==") == "https://host/hook/***"
+    assert redact_secret_url("https://host/hook") == "https://host/hook"
+    assert redact_secret_url("") == ""
 
 
 def make_app(repo, fake_client, tmp_path, secret=SECRET):
