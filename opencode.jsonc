@@ -1,0 +1,32 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "compaction": {
+    "auto": true,
+    "keep": { "tokens": 12000 },
+    "buffer": "15%"
+  },
+  "tool_output": {
+    "max_lines": 400,
+    "max_bytes": 16000
+  },
+  "watcher": {
+    "ignore": [
+      "data/raw/**",
+      "data/reports/**",
+      "data/*.db",
+      ".venv/**",
+      "**/__pycache__/**",
+      ".pytest_cache/**"
+    ]
+  },
+  "permissions": [
+    { "action": "read", "resource": "*", "effect": "allow" },
+    { "action": "read", "resource": ".env", "effect": "deny" },
+    { "action": "read", "resource": "*.env", "effect": "deny" },
+    { "action": "read", "resource": ".venv/**", "effect": "deny" },
+    { "action": "read", "resource": "data/raw/**", "effect": "deny" },
+    { "action": "read", "resource": "data/reports/**", "effect": "deny" },
+    { "action": "read", "resource": "data/*.db", "effect": "deny" },
+    { "action": "shell", "resource": "git push *", "effect": "ask" }
+  ]
+}

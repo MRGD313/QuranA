@@ -29,6 +29,12 @@ python -m pytest tests -q
 A live Bale token is required only to run the bot (`app.py`). Never commit a
 real token. Use `.env` locally (it is git-ignored).
 
+If `data/quran.db` is missing, data-dependent tests are skipped rather than
+failed. Run the three setup commands above first; a skip is not a pass. The
+canonical dependency metadata lives in `pyproject.toml`; `requirements.txt` is
+kept for quick installs and the Render build. See `AGENTS.md` for the project
+map and invariants.
+
 ## Pull requests
 
 1. Open an issue first for significant changes.
