@@ -6,10 +6,12 @@ Tanzil همان آیه تراز می‌کنیم؛ برای آیه‌هایی ک�
 """
 import re
 from collections import Counter, defaultdict
+from pathlib import Path
 
-RAW_DIR = r"G:\personal_OC_projects\quran\data\raw"
-MORPH = RAW_DIR + r"\quranic-corpus-morphology-0.4.txt"
-TANZIL = RAW_DIR + r"\quran-uthmani.txt"
+BASE_DIR = Path(__file__).resolve().parent.parent
+RAW_DIR = BASE_DIR / "data" / "raw"
+MORPH = RAW_DIR / "quranic-corpus-morphology-0.4.txt"
+TANZIL = RAW_DIR / "quran-uthmani.txt"
 
 
 def load_tanzil():

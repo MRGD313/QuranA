@@ -2,8 +2,10 @@
 import sqlite3
 import sys
 from collections import defaultdict
+from pathlib import Path
 
-conn = sqlite3.connect(r"G:\personal_OC_projects\quran\data\quran.db")
+BASE_DIR = Path(__file__).resolve().parent.parent
+conn = sqlite3.connect(BASE_DIR / "data" / "quran.db")
 conn.row_factory = sqlite3.Row
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 

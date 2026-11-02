@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Research scripts (`derive_buckwalter.py`, `find_ambiguous.py`, `show_ayah.py`)
+  no longer hard-code an absolute local path; they resolve `data/` from the
+  repository root, so the project works in any folder name.
+
 ### Changed
 
 - Documentation restructured: `README.md` is now a concise overview; deployment
