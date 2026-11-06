@@ -17,6 +17,7 @@
 """
 import json
 import logging
+import os
 import sys
 import threading
 import time
@@ -89,10 +90,12 @@ class WebhookApp:
 
         if method == "GET" and path == "/healthz":
             return 200, {"ok": True, "service": APP_NAME, "version": APP_VERSION,
+                         "commit": (os.environ.get("RENDER_GIT_COMMIT") or "")[:7],
                          "uptime_s": round(time.time() - self.started_at, 1)}
 
         if method == "GET" and path == "/":
-            return 200, {"ok": True, "service": APP_NAME, "version": APP_VERSION}
+            return 200, {"ok": True, "service": APP_NAME, "version": APP_VERSION,
+                         "commit": (os.environ.get("RENDER_GIT_COMMIT") or "")[:7]}
 
         if method == "POST" and path == self.path:
             try:

@@ -58,6 +58,7 @@ def test_health_ok_and_does_not_leak_secret(repo, fake_client, tmp_path):
     app = make_app(repo, fake_client, tmp_path)
     status, payload = app.dispatch("GET", "/healthz")
     assert status == 200 and payload["ok"] is True
+    assert isinstance(payload.get("commit"), str)
     assert SECRET not in json.dumps(payload, ensure_ascii=False)
 
 
