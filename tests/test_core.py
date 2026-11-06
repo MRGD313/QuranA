@@ -203,6 +203,42 @@ def test_word_to_report(repo, fake_client, tmp_path):
     chat_id, path, caption = fake_client.docs[-1]
     assert chat_id == 1 and path.exists() and path.suffix == ".txt"
     assert "كتب" in caption
+    # پس از فایل، متن پرامپت آمادهٔ کپی ارسال می‌شود
+    prompt = fake_client.texts()[-1]
+    assert "پژوهشگر قرآن" in prompt
+    assert "فایل متنی پیوست" in prompt
+    assert "«كتب»" in prompt and "«كتاب»" in prompt
+    assert "قرآن را با قرآن" in prompt
+    assert len(prompt) <= 4000
+
+
+def test_prompt_builder_is_root_specific():
+    from src.prompt_builder import build_chat_prompt
+    result = {"distinct_word_forms": 12, "lexical_events": 34, "unique_ayahs": 20}
+    p = build_chat_prompt("حسن", "محسنین", "محسنین", result)
+    assert "«حسن»" in p and "«محسنین»" in p
+    assert "12" in p and "34" in p and "20" in p
+    assert "یک هستهٔ معنایی مشترک" in p
+    assert "چه می‌کنند و چه نمی‌کنند" in p
+    assert "سوره:آیه" in p
+    assert len(p) <= 4000
+
+
+def test_prompt_not_sent_when_document_fails(repo, fake_client, tmp_path):
+    fake_client.fail_document = RuntimeError("network down")
+    h = BotHandler(fake_client, repo, out_dir=tmp_path)
+    h.handle_update(1, 1, "كتاب")
+    assert fake_client.docs == []
+    assert not any("پژوهشگر قرآن" in t for t in fake_client.texts())
+    assert any("ارسال فایل به بله با خطا" in t for t in fake_client.texts())
+
+
+def test_prompt_failure_does_not_break_flow(repo, fake_client, tmp_path):
+    fake_client.fail_message_contains = "پژوهشگر قرآن"
+    h = BotHandler(fake_client, repo, out_dir=tmp_path)
+    h.handle_update(1, 1, "كتاب")
+    assert fake_client.docs, "فایل باید قبل از خطای پرامپت ارسال شده باشد"
+    assert not any("پژوهشگر قرآن" in t for t in fake_client.texts())
 
 
 def test_ambiguous_flow_with_digit(repo, fake_client, tmp_path):

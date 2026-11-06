@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-06
+
+### Added
+
+- After each report, the bot sends a copy-ready Persian chat prompt tailored to
+  the resolved root and input word. It instructs the assistant to treat
+  same-root words as semantically related, interpret the Quran by the Quran,
+  rely only on the attached report, and explain practice and consequences with
+  verse citations.
+
 ### Fixed
 
 - Research scripts (`derive_buckwalter.py`, `find_ambiguous.py`, `show_ayah.py`)

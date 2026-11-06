@@ -16,8 +16,8 @@ Quranic words → full verses (Tanzil Uthmani 1.1) → UTF-8 `.txt` report.
 ## Map
 
 - `app.py` polling; `server.py` webhook; `config.py` env + paths.
-- Flow: `bot_handler` → `morphology` → `search_service` → `report_generator`;
-  data access through `quran_repository` (SQLite).
+- Flow: `bot_handler` → `morphology` → `search_service` → `report_generator` +
+  `prompt_builder`; data access through `quran_repository` (SQLite).
 - `src/` logic · `scripts/` CLI · `tests/` pytest · `docs/` design + deployment.
 - Details: `docs/ARCHITECTURE.md`; data/licences: `THIRD_PARTY_NOTICES.md`.
 

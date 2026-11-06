@@ -4,7 +4,7 @@ from pathlib import Path
 
 APP_NAME = "QuranA"
 APP_NAME_FA = "قرآنا"
-APP_VERSION = "0.1.0"
+APP_VERSION = "0.2.0"
 
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"

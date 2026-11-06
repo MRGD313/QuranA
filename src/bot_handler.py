@@ -12,6 +12,7 @@ from pathlib import Path
 
 from .search_service import search_root
 from .report_generator import generate_report
+from .prompt_builder import build_chat_prompt
 from .text_normalizer import normalize_word, normalize_arabic, valid_word, detect_script
 log = logging.getLogger(__name__)
 
@@ -148,7 +149,15 @@ class BotHandler:
                 chat_id, path,
                 caption=f"QuranA — گزارش واژه‌های هم‌ریشه «{root}» در قرآن کریم — "
                         f"{result['distinct_word_forms']} واژه، "
-                        f"{result['unique_ayahs']} آیه.")
+                        f"{result['unique_ayahs']} آیه. متن پرامپت گفت‌وگو در پیام بعدی است.")
         except Exception as exc:
             log.exception("ارسال فایل شکست خورد")
             self.client.send_message(chat_id, MSG_SEND_FAILED.format(err=exc))
+            return
+
+        # متن آمادهٔ کپی برای چت‌بات، همراه همان فایل پیوست
+        try:
+            self.client.send_message(
+                chat_id, build_chat_prompt(root, word, normalized, result))
+        except Exception:
+            log.exception("ارسال متن پرامپت شکست خورد (فایل قبلاً ارسال شده است)")

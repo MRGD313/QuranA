@@ -37,8 +37,11 @@ class FakeBaleClient:
         self.sent = []            # (chat_id, text)
         self.docs = []            # (chat_id, file_path, caption)
         self.fail_document = None  # برای شبیه‌سازی خطای ارسال سند
+        self.fail_message_contains = None  # خطا برای پیام‌های حاوی این عبارت
 
     def send_message(self, chat_id, text, reply_to_message_id=None):
+        if self.fail_message_contains and self.fail_message_contains in text:
+            raise RuntimeError("simulated message failure")
         self.sent.append((chat_id, text))
         return {"ok": True}
 

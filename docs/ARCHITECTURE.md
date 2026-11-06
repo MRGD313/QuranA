@@ -24,6 +24,7 @@ bot_handler.handle_update
    │     ├─ گروه‌بندی بر اساس (سوره، آیه) و حذف تکرار
    │     └─ مرتب‌سازی و محاسبه آمار
    ├─ report_generator.generate_report → فایل UTF-8
+   ├─ prompt_builder.build_chat_prompt → متن پرامپت آمادهٔ کپی
    └─ bale_api.sendDocument + sendMessage
 ```
 

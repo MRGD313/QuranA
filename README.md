@@ -2,16 +2,17 @@
 
 [![CI](https://github.com/MRGD313/QuranA/actions/workflows/ci.yml/badge.svg)](https://github.com/MRGD313/QuranA/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![release](https://img.shields.io/badge/release-v0.1.0-orange.svg)](https://github.com/MRGD313/QuranA/releases/tag/v0.1.0)
+[![release](https://img.shields.io/badge/release-v0.2.0-orange.svg)](https://github.com/MRGD313/QuranA/releases/tag/v0.2.0)
 
 **QuranA** یک ربات اوپن‌سورس برای پیام‌رسان بله است: یک واژهٔ عربی می‌فرستید،
 ریشهٔ صرفی آن از Quranic Arabic Corpus استخراج می‌شود، واژه‌های قرآنی هم‌ریشه
 پیدا می‌شوند و متن کامل آیات از Tanzil Uthmani در قالب یک فایل `.txt` (UTF-8)
-در همان گفت‌وگو ارسال می‌شود. وضعیت: نسخهٔ ۰.۱.۰ (بتا).
+در همان گفت‌وگو ارسال می‌شود. وضعیت: نسخهٔ ۰.۲.۰ (بتا).
 
 ## ویژگی‌ها
 
 - ریشه از دادهٔ صرفی رسمی، نه شباهت رشته‌ای یا حدس مدل زبانی.
+- پس از هر گزارش، یک **متن پرامپت آمادهٔ کپی** برای چت‌بات ارسال می‌شود تا با فایل پیوست گفت‌وگو کنید.
 - رفع ابهام چندریشه با فهرست شماره‌دار و انتخاب کاربر.
 - آیات یکتا و مرتب، با نام سوره و شمارهٔ آیه و آمار تفکیک‌شده.
 - گزارش با ذکر منبع/نسخهٔ داده؛ پشتیبانی از polling و webhook.
@@ -39,6 +40,7 @@ webhook و استقرار: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 1. در بله به ربات `/start` بدهید و یک واژه بفرستید (`علم`، `كتاب`، `سَجَدَ`).
 2. اگر چند ریشه محتمل بود، شمارهٔ ریشه را بفرستید.
 3. فایل `quran_roots_<ریشه>_<تاریخ>.txt` را دریافت می‌کنید.
+4. در پیام بعدی، متن پرامپت آماده می‌آید؛ آن را کپی کنید و همراه فایل پیوست به چت‌بات بدهید.
 
 آزمون هسته بدون شبکه و بدون توکن: `python scripts/run_core_e2e.py سَجَدَ`
 
@@ -60,7 +62,7 @@ python -m pytest tests -q
 python scripts/check_repo_hygiene.py
 ```
 
-۴۷ آزمون شامل نرمال‌سازی، ریشه، آیات، گزارش UTF-8، ربات، webhook و خطاها.
+۵۰ آزمون شامل نرمال‌سازی، ریشه، آیات، گزارش UTF-8، ربات، webhook و خطاها.
 اگر `data/quran.db` نباشد، آزمون‌های داده‌محور **skip** می‌شوند (skip ≠ pass)؛
 ابتدا `scripts/prepare_data.py`. CI روی Python 3.10/3.12:
 `.github/workflows/ci.yml`.
