@@ -66,3 +66,20 @@ python app.py
 
 حلقهٔ `getUpdates` هر ۳۰ ثانیه اجرا می‌شود. برای توقف `Ctrl+C`. اگر ربات روی
 webhook تنظیم شده باشد، ابتدا با `scripts/set_webhook.py --delete` آن را بردارید.
+
+## عیب‌یابی دیپلوی خودکار
+
+اگر با وجود `Auto-Deploy = On Commit`، commit جدید در تب **Events** رندر دیده
+نمی‌شود:
+
+1. در **Settings → Build → Source** مخزن و برنچ `main` را دوباره تأیید کنید و
+   **Git Credentials → Use My Credentials** را بزنید.
+2. در GitHub، بخش **Settings → Applications → Installed GitHub Apps** مطمئن
+   شوید اپ Render نصب است و مخزن QuranA در دسترسی آن قرار دارد.
+3. یک‌بار **Manual Deploy → Deploy latest commit** بزنید تا سرویس همگام شود.
+4. اگر همچنان خودکار نشد، از **Deploy Hook** رندر به‌همراه GitHub Actions
+   استفاده کنید (Secret با نام `RENDER_DEPLOY_HOOK`) و Auto-Deploy رندر را
+   خاموش کنید تا دیپلوی دوتایی رخ ندهد.
+
+پس از هر دیپلوی، نسخهٔ زنده را از `/healthz` بررسی کنید؛ مقدار `version` باید با
+`APP_VERSION` در `config.py` یکی باشد.
