@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- The copy-ready chat prompt now requires a critical self-review: it must list
+  verses that fit the proposed core meaning less well or appear to conflict,
+  explain them with citations, and revise the hypothesis instead of forcing it.
+
 ## [0.2.0] - 2026-11-06
 
 ### Added

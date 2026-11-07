@@ -220,6 +220,9 @@ def test_prompt_builder_is_root_specific():
     assert "12" in p and "34" in p and "20" in p
     assert "یک هستهٔ معنایی مشترک" in p
     assert "چه می‌کنند و چه نمی‌کنند" in p
+    assert "بازبینی نقادانه" in p
+    assert "تعارض" in p and "توجیه اجباری" in p
+    assert "آیات ناهم" in p
     assert "سوره:آیه" in p
     assert len(p) <= 4000
 
