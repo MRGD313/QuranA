@@ -163,12 +163,13 @@ def main():
     conn.executescript("""
     CREATE TABLE surahs (index_ INTEGER PRIMARY KEY, ayas INTEGER, name_ar TEXT, name_en TEXT, tname TEXT, type TEXT);
     CREATE TABLE ayat (surah INTEGER, ayah INTEGER, text TEXT, PRIMARY KEY (surah, ayah));
-    CREATE TABLE words (surah INTEGER, ayah INTEGER, word_pos INTEGER, buck TEXT, arabic TEXT, surface TEXT, norm TEXT, PRIMARY KEY (surah, ayah, word_pos));
+    CREATE TABLE words (surah INTEGER, ayah INTEGER, word_pos INTEGER, buck TEXT, arabic TEXT, surface TEXT, norm TEXT, norm_loose TEXT, PRIMARY KEY (surah, ayah, word_pos));
     CREATE TABLE segments (
         surah INTEGER, ayah INTEGER, word_pos INTEGER, seg_pos INTEGER,
         buck TEXT, tag TEXT, lemma TEXT, lemma_norm TEXT, root TEXT, features TEXT,
         PRIMARY KEY (surah, ayah, word_pos, seg_pos));
     CREATE INDEX idx_words_norm ON words(norm);
+    CREATE INDEX idx_words_norm_loose ON words(norm_loose);
     CREATE INDEX idx_segments_root ON segments(root);
     CREATE INDEX idx_segments_word ON segments(surah, ayah, word_pos);
     """)
@@ -201,7 +202,8 @@ def main():
                 unaligned_words += 1
                 surface = None  # واژه بی‌تراز (اختلاف نسخه ۱.۱)؛ از فرم تحلیل صرفی استفاده می‌شود
                 norm_val = normalize_arabic(arabic_full)
-            word_rows.append((s, a, w, buck_full, arabic_full, surface, norm_val))
+            word_rows.append((s, a, w, buck_full, arabic_full, surface, norm_val,
+                              norm_val.replace("\u0621", "")))
             for (seg, buck, tag, feats) in sorted(segs):
                 lemma_b, root_b = parse_features(feats)
                 lemma_ar = buckwalter_to_arabic(lemma_b) if lemma_b else ""
@@ -209,7 +211,7 @@ def main():
                 seg_rows.append((s, a, w, seg, buck, tag, lemma_ar,
                                  normalize_arabic(lemma_ar), root_ar, feats))
 
-    conn.executemany("INSERT INTO words VALUES (?,?,?,?,?,?,?)", word_rows)
+    conn.executemany("INSERT INTO words VALUES (?,?,?,?,?,?,?,?)", word_rows)
     conn.executemany("INSERT INTO segments VALUES (?,?,?,?,?,?,?,?,?,?)", seg_rows)
     conn.commit()
     print(f"words: {len(word_rows)}  segments: {len(seg_rows)}  missing_text: {skipped_missing_text}  unaligned_words: {unaligned_words}")

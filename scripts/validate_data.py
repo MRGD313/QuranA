@@ -58,6 +58,12 @@ def main():
     # --- ۲) پوشش صرفی ---
     segs = conn.execute("SELECT COUNT(*) FROM segments").fetchone()[0]
     words = conn.execute("SELECT COUNT(*) FROM words").fetchone()[0]
+    cols = {r[1] for r in conn.execute("PRAGMA table_info(words)")}
+    check("norm_loose" in cols, "ستون norm_loose در جدول words نیست (prepare_data را دوباره اجرا کنید)")
+    if "norm_loose" in cols:
+        bad_loose = conn.execute(
+            "SELECT COUNT(*) FROM words WHERE norm_loose != REPLACE(norm, 'ء', '')").fetchone()[0]
+        check(bad_loose == 0, f"{bad_loose} واژه norm_loose ناسازگار دارد")
     roots = conn.execute("SELECT COUNT(DISTINCT root) FROM segments WHERE root != ''").fetchone()[0]
     no_root = conn.execute("SELECT COUNT(*) FROM segments WHERE root = ''").fetchone()[0]
     # سگمنت‌های اسم و فعل باید تقریباً همگی ریشه داشته باشند؛

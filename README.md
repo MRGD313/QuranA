@@ -2,12 +2,12 @@
 
 [![CI](https://github.com/MRGD313/QuranA/actions/workflows/ci.yml/badge.svg)](https://github.com/MRGD313/QuranA/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![release](https://img.shields.io/badge/release-v0.2.0-orange.svg)](https://github.com/MRGD313/QuranA/releases/tag/v0.2.0)
+[![release](https://img.shields.io/badge/release-v0.2.1-orange.svg)](https://github.com/MRGD313/QuranA/releases/tag/v0.2.1)
 
 **QuranA** یک ربات اوپن‌سورس برای پیام‌رسان بله است: یک واژهٔ عربی می‌فرستید،
 ریشهٔ صرفی آن از Quranic Arabic Corpus استخراج می‌شود، واژه‌های قرآنی هم‌ریشه
 پیدا می‌شوند و متن کامل آیات از Tanzil Uthmani در قالب یک فایل `.txt` (UTF-8)
-در همان گفت‌وگو ارسال می‌شود. وضعیت: نسخهٔ ۰.۲.۰ (بتا).
+در همان گفت‌وگو ارسال می‌شود. وضعیت: نسخهٔ ۰.۲.۱ (بتا).
 
 ## ویژگی‌ها
 
@@ -62,7 +62,7 @@ python -m pytest tests -q
 python scripts/check_repo_hygiene.py
 ```
 
-۵۰ آزمون شامل نرمال‌سازی، ریشه، آیات، گزارش UTF-8، ربات، webhook و خطاها.
+۶۰ آزمون شامل نرمال‌سازی، ریشه، آیات، گزارش UTF-8، ربات، webhook و خطاها.
 اگر `data/quran.db` نباشد، آزمون‌های داده‌محور **skip** می‌شوند (skip ≠ pass)؛
 ابتدا `scripts/prepare_data.py`. CI روی Python 3.10/3.12:
 `.github/workflows/ci.yml`.

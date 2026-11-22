@@ -115,6 +115,34 @@ def test_root_not_exist(repo):
     assert not res.ok and not res.ambiguity
 
 
+@pytest.mark.parametrize("word", ["آیه", "آیة", "آیات", "آيَاتُ", "آیٰت", "ٔایٰت", "الایات"])
+def test_hamza_variants_resolve_to_ayah_root(repo, word):
+    """همزهٔ مستقل/ترکیبی و املای فارسی نباید باعث «یافت نشد» شوند."""
+    res = resolve_roots(word, normalize_word(word), repo)
+    assert res.ok and not res.ambiguity
+    assert res.root == "ايي"
+    result = search_root(res.root, repo)
+    assert result["distinct_word_forms"] == 45
+    assert result["lexical_events"] == 382
+    assert result["unique_ayahs"] == 353
+
+
+def test_persian_ayat_offers_disambiguation(repo):
+    """«آیت/ایت» فارسی با فعل «ٱئْتِ» عربی هم‌شکل است؛ نباید خودکار انتخاب شود."""
+    res = resolve_roots("آیت", normalize_word("آیت"), repo)
+    assert res.ambiguity and not res.ok
+    roots = {o.root for o in res.options}
+    assert {"اتي", "ايي"} <= roots
+    ayah_option = next(o for o in res.options if o.root == "ايي")
+    assert "آیت" in ayah_option.hint
+
+
+def test_arabic_eeti_is_not_hijacked(repo):
+    """املای عربی «إِيتِ» (با ی عربی) نباید گزینهٔ فارسی بگیرد."""
+    res = resolve_roots("إِيتِ", normalize_word("إِيتِ"), repo)
+    assert res.ok and not res.ambiguity and res.root == "اتي"
+
+
 # ---------------- جست‌وجو و آیات ----------------
 def test_search_root_real_data(repo):
     result = search_root("كتب", repo)
@@ -145,6 +173,7 @@ def test_report_generation_utf8(repo, tmp_path):
     data = path.read_bytes()
     text = data.decode("utf-8")
     assert "گزارش واژه‌های هم‌ریشه در قرآن کریم" in text
+    assert "مدخل نمونه:" in text
     assert "تعداد آیات یکتا: " + str(result["unique_ayahs"]) in text
     for g in result["ayat"][:30]:
         assert g.text in text
@@ -274,6 +303,19 @@ def test_user_isolation(repo, fake_client, tmp_path):
         assert 1 in h.pending
     h.handle_update(2, 1, "كتاب")
     assert any(cid == 2 for (cid, _p, _c) in fake_client.docs)
+
+
+def test_persian_ayat_choice_flow(repo, fake_client, tmp_path):
+    """کاربر «آیت» را می‌فرستد؛ ربات باید گزینه‌ها را نشان دهد و انتخاب درست کار کند."""
+    h = BotHandler(fake_client, repo, out_dir=tmp_path)
+    h.handle_update(7, 1, "آیت")
+    assert any("آیت" in t for t in fake_client.texts())
+    options = h.pending[7]["options"]
+    assert "ايي" in options
+    pick = str(options.index("ايي") + 1)
+    h.handle_update(7, 2, pick)
+    docs = [d for d in fake_client.docs if d[0] == 7]
+    assert docs and "ايي" in docs[-1][2]
 
 
 # ---------------- اتصال بله ----------------

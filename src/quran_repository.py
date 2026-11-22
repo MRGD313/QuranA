@@ -23,6 +23,8 @@ class QuranRepository:
         # سریال می‌شوند و پایگاه داده فقط خوانده می‌شود.
         self._conn = sqlite3.connect(str(self.db_path), check_same_thread=False)
         self._conn.row_factory = sqlite3.Row
+        cols = {r["name"] for r in self._conn.execute("PRAGMA table_info(words)")}
+        self._has_norm_loose = "norm_loose" in cols
         self._load_surah_names()
         return self
 
@@ -48,13 +50,24 @@ class QuranRepository:
         return [r["root"] for r in cur]
 
     def lemmas_by_norm(self, norm):
-        """تمام واژه‌های قرآنی که فرم نرمال‌شده‌شان با ورودی برابر است."""
+        """تمام واژه‌های قرآنی که فرم نرمال‌شده‌شان با ورودی برابر است.
+
+        علاوه بر تطبیق دقیق، نسخهٔ بدون همزهٔ مستقل (ء) هم بررسی می‌شود؛ چون
+        رسم‌الخط عثمانی همزه را گاهی مستقل (ءَايَة) و گاهی ترکیبی (ٱلْـَٔايَة)
+        می‌نویسد و نرمال‌سازی ترکیبی را حذف می‌کند.
+        """
+        loose = norm.replace("\u0621", "")
+        if getattr(self, "_has_norm_loose", False):
+            where = "words.norm=? OR words.norm_loose=?"
+        else:
+            # سازگاری با پایگاه داده‌های قدیمی (قبل از افزودن ستون)
+            where = "words.norm=? OR REPLACE(words.norm, '\u0621', '')=?"
         cur = self._conn.execute(
             "SELECT DISTINCT segments.root AS root, segments.lemma AS lemma, "
             "segments.lemma_norm AS lemma_norm, COALESCE(words.surface, words.arabic) AS arabic "
             "FROM segments JOIN words ON segments.surah=words.surah "
             "AND segments.ayah=words.ayah AND segments.word_pos=words.word_pos "
-            "WHERE words.norm=? AND segments.root != ''", (norm,))
+            "WHERE (" + where + ") AND segments.root != ''", (norm, loose))
         rows = [dict(r) for r in cur]
         out = []
         seen = set()
@@ -64,6 +77,14 @@ class QuranRepository:
                 seen.add(key)
                 out.append(r)
         return out
+
+    def lemma_example(self, root):
+        """پرتکرارترین مدخل (lemma) یک ریشه، برای نمایش کنار ریشه."""
+        cur = self._conn.execute(
+            "SELECT lemma FROM segments WHERE root=? AND lemma != '' "
+            "GROUP BY lemma ORDER BY COUNT(*) DESC LIMIT 1", (root,))
+        row = cur.fetchone()
+        return row["lemma"] if row else ""
 
     def roots_by_norm(self, norm):
         """ریشه‌هایی که شکل نرمال‌شده آنها با ورودی برابر است (مثلاً ورودی خود ریشه است)."""

@@ -115,8 +115,7 @@ class BotHandler:
         opts = res.options
         lines = []
         for i, o in enumerate(opts, start=1):
-            samples = "، ".join(o.sample_words[:4])
-            lines.append(f"{i}. ریشه «{o.root}» — {o.occurrence_count} رخداد — نمونه: {samples}")
+            lines.append(f"{i}. {o.label()}")
         lines.append("شماره گزینه موردنظر را بفرستید.")
         self.client.send_message(chat_id, "\n".join(lines))
         self.pending[chat_id] = {"state": "choose-root",

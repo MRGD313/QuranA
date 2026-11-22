@@ -38,6 +38,9 @@ def generate_report(root: str, input_word: str, normalized: str, result: dict,
     add("کلمه ورودی:    " + input_word)
     add("صورت نرمال‌شده: " + normalized)
     add("ریشه تشخیص‌داده‌شده: " + root)
+    lemma_example = repo.lemma_example(root)
+    if lemma_example:
+        add("مدخل نمونه: " + lemma_example)
     add("وضعیت اطمینان تحلیل: ریشه بر اساس داده رسمی Quranic Arabic Corpus 0.4 استخراج شد.")
     add("منبع داده صرفی: " + MORPHOLOGY_SOURCE)
     add("نسخه متن قرآن: " + QURAN_TEXT_SOURCE)

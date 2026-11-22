@@ -15,10 +15,14 @@ class RootOption:
     stem_count: int          # تعداد واژه‌هایی که با آن ریشه ظاهر شدند
     occurrence_count: int    # تعداد کل رخدادهای واژگانی این ریشه در قرآن
     sample_words: list       # چند واژه نمونه
+    hint: str = ""           # توضیح اختیاری برای گزینه‌های ویژه
 
     def label(self) -> str:
         samples = "، ".join(self.sample_words[:4])
-        return (f"ریشه «{self.root}» — {self.occurrence_count} رخداد — نمونه: {samples}")
+        text = f"ریشه «{self.root}» — {self.occurrence_count} رخداد — نمونه: {samples}"
+        if self.hint:
+            text += f" — {self.hint}"
+        return text
 
 
 @dataclass
@@ -75,6 +79,23 @@ def resolve_roots(input_word: str, normalized_word: str, repo) -> RootResolution
                 occurrence_count=len(occ),
                 sample_words=stems,
             ))
+
+    # روش ۳: رفع ابهام واژه‌های هم‌شکل فارسی/عربی
+    # «آیت/ایت» فارسی به «ايت» نرمال می‌شود و با فعل قرآنی «ٱئْتِ» (ریشهٔ أتى)
+    # برخورد می‌کند. در این حالت گزینهٔ «آیه/آیات» را هم نشان می‌دهیم تا کاربر
+    # خودش انتخاب کند (بدون حدس خودکار).
+    if "\u06CC" in input_word and normalized_word == "ايت":
+        if not any(o.root == "ايي" for o in options):
+            occ = repo.occurrences_of_root("ايي")
+            if occ:
+                examples = sorted({o["arabic"] for o in occ})[:4]
+                options.append(RootOption(
+                    root="ايي",
+                    stem_count=len({o["arabic"] for o in occ}),
+                    occurrence_count=len(occ),
+                    sample_words=examples,
+                    hint="اگر منظور «آیت/آیه» است",
+                ))
 
     if not options:
         return res  # ok=False

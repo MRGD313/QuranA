@@ -4,11 +4,21 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.2.1] - 2026-11-22
+
+### Fixed
+
+- Hamza-tolerant word matching: standalone hamza (`ء`) and combining hamza
+  spellings no longer split the same word, so inputs such as «آیه»، «آیات» and
+  «آیٰت» resolve correctly. The report now also shows a sample lemma for the
+  root (e.g. `ايي` → `ءَايَة`).
+- Persian «آیت/ایت» no longer silently resolves to the Arabic imperative
+  «ٱئْتِ» (root أتى); the bot offers both roots and lets the user choose.
+- Added an indexed `norm_loose` column to keep hamza-tolerant lookups fast.
 
 ### Changed
 
-- The copy-ready chat prompt now requires a critical self-review: it must list
+- The copy-ready chat prompt requires a critical self-review: it must list
   verses that fit the proposed core meaning less well or appear to conflict,
   explain them with citations, and revise the hypothesis instead of forcing it.
 
